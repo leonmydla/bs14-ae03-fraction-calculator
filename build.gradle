@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group 'me.leonmydla.bs14'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter:5.4.2')
+//    testImplementation('org.mockito:mockito-core:2.+')
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
