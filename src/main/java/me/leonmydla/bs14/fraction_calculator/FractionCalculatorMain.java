@@ -1,8 +1,7 @@
 package me.leonmydla.bs14.fraction_calculator;
 
-public class Main {
+public class FractionCalculatorMain {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
     }
 }

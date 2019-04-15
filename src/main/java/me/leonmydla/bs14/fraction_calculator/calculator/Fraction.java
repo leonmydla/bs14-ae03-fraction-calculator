@@ -17,7 +17,11 @@ public class Fraction {
     }
 
     public void writeOut() {
-        System.out.println(numerator + "/" + denominator);
+        System.out.println(toString());
+    }
+
+    public String toString() {
+        return numerator + "/" + denominator;
     }
 
     public int getNumerator() {

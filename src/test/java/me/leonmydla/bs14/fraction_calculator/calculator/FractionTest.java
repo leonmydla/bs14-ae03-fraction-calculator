@@ -1,24 +1,39 @@
 package me.leonmydla.bs14.fraction_calculator.calculator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FractionTest {
 
+    private final int      commonNumerator   = 10;
+    private final int      commonDenominator = 10;
+    private       Fraction fraction;
+
+    @BeforeEach
+    void beforeAll() {
+        fraction = new Fraction(commonNumerator, commonDenominator);
+    }
+
     @Test
     void shouldHaveCorrectDefaultValues() {
         Fraction fraction = new Fraction();
 
-        assertEquals(0, fraction.getNumerator());
-        assertEquals(1, fraction.getDenominator());
+        assertEquals(0, fraction.getNumerator(), "Should have correct default Numerator");
+        assertEquals(1, fraction.getDenominator(), "Should have correct default Denominator");
     }
 
     @Test
     void shouldSetCorrectDefaultValues() {
-        Fraction fraction = new Fraction(1, 0);
+        assertEquals(commonNumerator, fraction.getNumerator(), "Should have expected Numerator");
+        assertEquals(commonDenominator, fraction.getDenominator(), "Should have expected Denominator");
+    }
 
-        assertEquals(1, fraction.getNumerator());
-        assertEquals(0, fraction.getDenominator());
+    @Test
+    void shouldCreateCorrectString() {
+        String expectedString = commonNumerator + "/" + commonDenominator;
+
+        assertEquals(expectedString, fraction.toString(), "Should create expected string");
     }
 }
