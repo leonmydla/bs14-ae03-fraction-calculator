@@ -47,4 +47,17 @@ class FractionTest {
         assertEquals(expectedNumerator, fraction.getNumerator());
         assertEquals(expectedDenominator, fraction.getDenominator());
     }
+
+    @Test
+    void shouldDivideCorrectly() {
+        fraction.setNumerator(1);
+        int expectedNumerator   = fraction.getNumerator() * fraction.getDenominator();
+        int expectedDenominator = fraction.getDenominator() * fraction.getNumerator();
+
+        fraction.divide(fraction);
+
+        System.out.println(fraction);
+        assertEquals(expectedNumerator, fraction.getNumerator());
+        assertEquals(expectedDenominator, fraction.getDenominator());
+    }
 }

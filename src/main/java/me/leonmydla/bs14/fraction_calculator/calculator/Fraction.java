@@ -43,6 +43,16 @@ public class Fraction {
         return this;
     }
 
+    public Fraction divide(Fraction object) {
+        final int newNumerator = numerator * object.denominator;
+        final int newDenominator = denominator * object.numerator;
+
+        setNumerator(newNumerator);
+        setDenominator(newDenominator);
+
+        return this;
+    }
+
     public String toString() {
         return numerator + "/" + denominator;
     }
