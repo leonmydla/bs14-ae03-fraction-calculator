@@ -36,4 +36,15 @@ class FractionTest {
 
         assertEquals(expectedString, fraction.toString(), "Should create expected string");
     }
+
+    @Test
+    void shouldMultiplyCorrectly() {
+        int expectedNumerator   = fraction.getNumerator() * fraction.getNumerator();
+        int expectedDenominator = fraction.getDenominator() * fraction.getDenominator();
+
+        fraction.multiply(fraction);
+
+        assertEquals(expectedNumerator, fraction.getNumerator());
+        assertEquals(expectedDenominator, fraction.getDenominator());
+    }
 }

@@ -20,10 +20,6 @@ public class Fraction {
         System.out.println(toString());
     }
 
-    public String toString() {
-        return numerator + "/" + denominator;
-    }
-
     public int getNumerator() {
         return numerator;
     }
@@ -38,5 +34,16 @@ public class Fraction {
 
     public void setDenominator(final int denominator) {
         this.denominator = denominator;
+    }
+
+    public Fraction multiply(Fraction object) {
+        numerator = numerator * object.numerator;
+        denominator = denominator * object.denominator;
+
+        return this;
+    }
+
+    public String toString() {
+        return numerator + "/" + denominator;
     }
 }
