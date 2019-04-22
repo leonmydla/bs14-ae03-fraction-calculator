@@ -20,14 +20,12 @@ class FractionTest {
     void shouldHaveCorrectDefaultValues() {
         Fraction fraction = new Fraction();
 
-        assertEquals(0, fraction.getNumerator(), "Should have correct default Numerator");
-        assertEquals(1, fraction.getDenominator(), "Should have correct default Denominator");
+        checkForExpectedValues(fraction, 0, 1);
     }
 
     @Test
     void shouldSetCorrectDefaultValues() {
-        assertEquals(commonNumerator, fraction.getNumerator(), "Should have expected Numerator");
-        assertEquals(commonDenominator, fraction.getDenominator(), "Should have expected Denominator");
+        checkForExpectedValues(commonNumerator, commonDenominator);
     }
 
     @Test
@@ -38,26 +36,70 @@ class FractionTest {
     }
 
     @Test
+    void shouldAddCorrectly() {
+        fraction.setNumerator(100);
+        fraction.setDenominator(10);
+
+        Fraction fractionToAdd = new Fraction(10, 100);
+
+        fraction.add(fractionToAdd);
+
+        checkForExpectedValues(1010, 100);
+    }
+
+    @Test
+    void shouldSubtractCorrectly() {
+        fraction.setNumerator(100);
+        fraction.setDenominator(10);
+
+        Fraction fractionToSubtract = new Fraction(10, 100);
+
+        fraction.subtract(fractionToSubtract);
+
+        checkForExpectedValues(990, 100);
+    }
+
+    @Test
     void shouldMultiplyCorrectly() {
-        int expectedNumerator   = fraction.getNumerator() * fraction.getNumerator();
-        int expectedDenominator = fraction.getDenominator() * fraction.getDenominator();
+        final int expectedNumerator   = fraction.getNumerator() * fraction.getNumerator();
+        final int expectedDenominator = fraction.getDenominator() * fraction.getDenominator();
 
         fraction.multiply(fraction);
 
-        assertEquals(expectedNumerator, fraction.getNumerator());
-        assertEquals(expectedDenominator, fraction.getDenominator());
+        checkForExpectedValues(expectedNumerator, expectedDenominator);
     }
 
     @Test
     void shouldDivideCorrectly() {
         fraction.setNumerator(1);
-        int expectedNumerator   = fraction.getNumerator() * fraction.getDenominator();
-        int expectedDenominator = fraction.getDenominator() * fraction.getNumerator();
+
+        final int expectedNumerator   = fraction.getNumerator() * fraction.getDenominator();
+        final int expectedDenominator = fraction.getDenominator() * fraction.getNumerator();
 
         fraction.divide(fraction);
 
-        System.out.println(fraction);
-        assertEquals(expectedNumerator, fraction.getNumerator());
-        assertEquals(expectedDenominator, fraction.getDenominator());
+        checkForExpectedValues(expectedNumerator, expectedDenominator);
+    }
+
+    @Test
+    void shouldShrinkCorrectly() {
+        fraction.shrink();
+
+        checkForExpectedValues(1, 1);
+
+        fraction.setNumerator(10);
+        fraction.setDenominator(100);
+        fraction.shrink();
+
+        checkForExpectedValues(1, 10);
+    }
+
+    private void checkForExpectedValues(final int expectedNumerator, final int expectedDenominator) {
+        checkForExpectedValues(fraction, expectedNumerator, expectedDenominator);
+    }
+
+    private void checkForExpectedValues(final Fraction fraction, final int expectedNumerator, final int expectedDenominator) {
+        assertEquals(expectedNumerator, fraction.getNumerator(), "Should have expected numerator");
+        assertEquals(expectedDenominator, fraction.getDenominator(), "Should have expected denominator");
     }
 }
