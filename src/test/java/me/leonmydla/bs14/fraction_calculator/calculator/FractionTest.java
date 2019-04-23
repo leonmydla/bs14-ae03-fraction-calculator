@@ -44,7 +44,7 @@ class FractionTest {
 
         fraction.add(fractionToAdd);
 
-        checkForExpectedValues(1010, 100);
+        checkForExpectedValues(101, 10);
     }
 
     @Test
@@ -56,29 +56,21 @@ class FractionTest {
 
         fraction.subtract(fractionToSubtract);
 
-        checkForExpectedValues(990, 100);
+        checkForExpectedValues(99, 10);
     }
 
     @Test
     void shouldMultiplyCorrectly() {
-        final int expectedNumerator   = fraction.getNumerator() * fraction.getNumerator();
-        final int expectedDenominator = fraction.getDenominator() * fraction.getDenominator();
+        fraction.multiply(new Fraction(1,2));
 
-        fraction.multiply(fraction);
-
-        checkForExpectedValues(expectedNumerator, expectedDenominator);
+        checkForExpectedValues(1, 2);
     }
 
     @Test
     void shouldDivideCorrectly() {
-        fraction.setNumerator(1);
+        fraction.divide(new Fraction(2, 1));
 
-        final int expectedNumerator   = fraction.getNumerator() * fraction.getDenominator();
-        final int expectedDenominator = fraction.getDenominator() * fraction.getNumerator();
-
-        fraction.divide(fraction);
-
-        checkForExpectedValues(expectedNumerator, expectedDenominator);
+        checkForExpectedValues(1, 2);
     }
 
     @Test

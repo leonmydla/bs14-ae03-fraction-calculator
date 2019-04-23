@@ -1,9 +1,5 @@
 package me.leonmydla.bs14.fraction_calculator.calculator;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-
 public class Fraction {
 
     private int numerator;
@@ -20,27 +16,31 @@ public class Fraction {
         this.denominator = denominator;
     }
 
-    public void writeOut() {
+    public String toString() {
+        return numerator + "/" + denominator;
+    }
+
+    void writeOut() {
         System.out.println(toString());
     }
 
-    public int getNumerator() {
+    int getNumerator() {
         return numerator;
     }
 
-    public void setNumerator(final int numerator) {
+    void setNumerator(final int numerator) {
         this.numerator = numerator;
     }
 
-    public int getDenominator() {
+    int getDenominator() {
         return denominator;
     }
 
-    public void setDenominator(final int denominator) {
+    void setDenominator(final int denominator) {
         this.denominator = denominator;
     }
 
-    public void add(Fraction object) {
+    void add(Fraction object) {
         makeFractionsCompatible(this, object);
 
         numerator += object.numerator;
@@ -48,7 +48,7 @@ public class Fraction {
         shrink();
     }
 
-    public void subtract(Fraction object) {
+    void subtract(Fraction object) {
         makeFractionsCompatible(this, object);
 
         numerator -= object.numerator;
@@ -56,14 +56,14 @@ public class Fraction {
         shrink();
     }
 
-    public void multiply(Fraction object) {
+    void multiply(Fraction object) {
         numerator = numerator * object.numerator;
         denominator = denominator * object.denominator;
 
         shrink();
     }
 
-    public void divide(Fraction object) {
+    void divide(Fraction object) {
         final int newNumerator   = numerator * object.denominator;
         final int newDenominator = denominator * object.numerator;
 
@@ -73,48 +73,20 @@ public class Fraction {
         shrink();
     }
 
-    public void shrink() {
-        if (numerator == denominator) {
-            numerator = 1;
-            denominator = 1;
-            return;
-        }
+    void shrink() {
+        final int commonDivider = MathSupport.findHighestCommonDivider(numerator, denominator);
 
-        int newDenominator = MathSupport.findLowestCommonMultiple(numerator, denominator);
-
-        setDenominatorAndAdjustNumerator(this, newDenominator);
-
-        newDenominator = MathSupport.findLowestCommonDivider(numerator, denominator);
-
-        if (newDenominator > 0) {
-            setDenominatorAndAdjustNumerator(this, newDenominator);
-        }
-    }
-
-    public String toString() {
-        return numerator + "/" + denominator;
+        numerator /= commonDivider;
+        denominator /= commonDivider;
     }
 
     private void makeFractionsCompatible(Fraction subject, Fraction object) {
-        subject.shrink();
-        object.shrink();
+        final int newDenominator = subject.denominator * object.denominator;
 
-        final int newDenominator = MathSupport.findLowestCommonMultiple(subject.denominator, object.denominator);
+        subject.numerator *= object.denominator;
+        object.numerator *= subject.denominator;
 
-        setDenominatorAndAdjustNumerator(subject, newDenominator);
-        setDenominatorAndAdjustNumerator(object, newDenominator);
-    }
-
-    private static void setDenominatorAndAdjustNumerator(Fraction fraction, final int denominator) {
-        final BigDecimal newDenominator = new BigDecimal(denominator);
-        final BigDecimal newNumerator = newDenominator.divide(new BigDecimal(fraction.denominator))
-                                                      .multiply(new BigDecimal(fraction.numerator));
-
-        if (newNumerator.equals(newNumerator.setScale(0, RoundingMode.FLOOR))) {
-            throw new CalculationException("Can't adjust numerator. Result is not an " + Integer.class);
-        }
-
-        fraction.numerator = Math.round(Math.ceil(newNumerator));
-        fraction.denominator = Math.round(newDenominator);
+        subject.denominator = newDenominator;
+        object.denominator = newDenominator;
     }
 }
