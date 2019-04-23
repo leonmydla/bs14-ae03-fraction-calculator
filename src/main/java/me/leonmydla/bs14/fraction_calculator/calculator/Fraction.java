@@ -1,5 +1,8 @@
 package me.leonmydla.bs14.fraction_calculator.calculator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Fraction {
 
     private int numerator;
@@ -17,7 +20,26 @@ public class Fraction {
     }
 
     public String toString() {
-        return numerator + "/" + denominator;
+        final boolean shouldShowIntegralAmount = getIntegralAmount() != 0;
+        final boolean shouldShowFraction       = getNumeratorWithoutIntegralAmount() != 0;
+
+        if (!shouldShowIntegralAmount && !shouldShowFraction) {
+            return "0";
+        }
+
+        List<String> strings = new ArrayList<>();
+
+        if (shouldShowIntegralAmount) {
+            String integralAmount = String.valueOf(getIntegralAmount());
+
+            strings.add(integralAmount);
+        }
+
+        if (shouldShowFraction) {
+            strings.add(getNumeratorWithoutIntegralAmount() + "/" + denominator);
+        }
+
+        return String.join(" ", strings);
     }
 
     void writeOut() {
@@ -32,6 +54,10 @@ public class Fraction {
         this.numerator = numerator;
     }
 
+    int getNumeratorWithoutIntegralAmount() {
+        return numerator % denominator;
+    }
+
     int getDenominator() {
         return denominator;
     }
@@ -40,8 +66,12 @@ public class Fraction {
         this.denominator = denominator;
     }
 
+    int getIntegralAmount() {
+        return numerator / denominator;
+    }
+
     void add(Fraction object) {
-        makeFractionsCompatible(this, object);
+        sanitizeAndMakeCompatible(object);
 
         numerator += object.numerator;
 
@@ -49,11 +79,17 @@ public class Fraction {
     }
 
     void subtract(Fraction object) {
-        makeFractionsCompatible(this, object);
+        sanitizeAndMakeCompatible(object);
 
         numerator -= object.numerator;
 
         shrink();
+    }
+
+    private void sanitizeAndMakeCompatible(Fraction object) {
+        sanitize();
+        object.sanitize();
+        makeFractionsCompatible(this, object);
     }
 
     void multiply(Fraction object) {
@@ -74,10 +110,29 @@ public class Fraction {
     }
 
     void shrink() {
+        sanitize();
+
+        final boolean switchNumerator = numerator < 0;
+
+        if (switchNumerator) {
+            numerator *= -1;
+        }
+
         final int commonDivider = MathSupport.findHighestCommonDivider(numerator, denominator);
 
         numerator /= commonDivider;
         denominator /= commonDivider;
+
+        if (switchNumerator) {
+            numerator *= -1;
+        }
+    }
+
+    void sanitize() {
+        if (denominator < 0) {
+            numerator *= -1;
+            denominator *= -1;
+        }
     }
 
     private void makeFractionsCompatible(Fraction subject, Fraction object) {

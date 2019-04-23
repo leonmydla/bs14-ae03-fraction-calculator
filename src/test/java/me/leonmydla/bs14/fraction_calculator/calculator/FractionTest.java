@@ -3,6 +3,8 @@ package me.leonmydla.bs14.fraction_calculator.calculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FractionTest {
@@ -29,48 +31,134 @@ class FractionTest {
     }
 
     @Test
-    void shouldCreateCorrectString() {
-        String expectedString = commonNumerator + "/" + commonDenominator;
+    void shouldReturnIntegralAmountAsString() {
+        assertEquals(
+            "1",
+            fraction.toString(),
+            "A Fraction which only represents an integral amount should only be represented the integral amount when toString is used"
+        );
+    }
 
-        assertEquals(expectedString, fraction.toString(), "Should create expected string");
+    @Test
+    void shouldReturnZeroWhenFractionResultsInZero() {
+        fraction.setNumerator(0);
+
+        assertEquals(
+            "0",
+            fraction.toString(),
+            "A Fraction which only represents an integral amount should only be represented the integral amount when toString is used"
+        );
+    }
+
+    @Test
+    void shouldReturnFractionWhenNoIntegralAmountIsAvailable() {
+        fraction.setNumerator(9);
+
+        assertEquals(
+            "9/10",
+            fraction.toString(),
+            "A fraction which doesn't include an integral amount should only be represented by the fraction as a string"
+        );
+    }
+
+    @Test
+    void shouldReturnIntegralAmountAndFractionOverhang() {
+        fraction.setNumerator(19);
+
+        assertEquals(
+            "1 9/10",
+            fraction.toString(),
+            "A fraction which includes an integral amount and has a fraction left should be represented by the integral amount and the left fraction"
+        );
+    }
+
+    @Test
+    void getCorrectNumeratorWithoutIntegralAmount() {
+        fraction.setNumerator(19);
+
+        assertEquals(9, fraction.getNumeratorWithoutIntegralAmount());
+    }
+
+    @Test
+    void getCorrectIntegralAmount() {
+        fraction.setNumerator(11);
+
+        assertEquals(1, fraction.getIntegralAmount());
+
+        fraction.setNumerator(19);
+
+        assertEquals(1, fraction.getIntegralAmount());
     }
 
     @Test
     void shouldAddCorrectly() {
-        fraction.setNumerator(100);
-        fraction.setDenominator(10);
+        setFractionAndCheckAction(fraction::add, 100, 10, 10, 100, 101, 10);
 
-        Fraction fractionToAdd = new Fraction(10, 100);
+        setFractionAndCheckAction(fraction::add, 100, 10, -10, 100, 99, 10);
+        setFractionAndCheckAction(fraction::add, 100, 10, 10, -100, 99, 10);
+        setFractionAndCheckAction(fraction::add, 100, 10, -10, -100, 101, 10);
 
-        fraction.add(fractionToAdd);
-
-        checkForExpectedValues(101, 10);
+        setFractionAndCheckAction(fraction::add, -10, 100, 100, 10, 99, 10);
+        setFractionAndCheckAction(fraction::add, 10, -100, 100, 10, 99, 10);
+        setFractionAndCheckAction(fraction::add, -10, -100, 100, 10, 101, 10);
     }
 
     @Test
     void shouldSubtractCorrectly() {
-        fraction.setNumerator(100);
-        fraction.setDenominator(10);
+        setFractionAndCheckAction(fraction::subtract, 100, 10, 10, 100, 99, 10);
 
-        Fraction fractionToSubtract = new Fraction(10, 100);
+        setFractionAndCheckAction(fraction::subtract, 100, 10, -10, 100, 101, 10);
+        setFractionAndCheckAction(fraction::subtract, 100, 10, 10, -100, 101, 10);
+        setFractionAndCheckAction(fraction::subtract, 100, 10, -10, -100, 99, 10);
 
-        fraction.subtract(fractionToSubtract);
-
-        checkForExpectedValues(99, 10);
+        setFractionAndCheckAction(fraction::subtract, -10, 100, 100, 10, -101, 10);
+        setFractionAndCheckAction(fraction::subtract, 10, -100, 100, 10, -101, 10);
+        setFractionAndCheckAction(fraction::subtract, -10, -100, 100, 10, -99, 10);
     }
 
     @Test
     void shouldMultiplyCorrectly() {
-        fraction.multiply(new Fraction(1,2));
+        setFractionAndCheckAction(fraction::multiply, 100, 10, 10, 100, 1, 1);
 
-        checkForExpectedValues(1, 2);
+        setFractionAndCheckAction(fraction::multiply, 100, 10, -10, 100, -1, 1);
+        setFractionAndCheckAction(fraction::multiply, 100, 10, 10, -100, -1, 1);
+        setFractionAndCheckAction(fraction::multiply, 100, 10, -10, -100, 1, 1);
+
+        setFractionAndCheckAction(fraction::multiply, -10, 100, 100, 10, -1, 1);
+        setFractionAndCheckAction(fraction::multiply, 10, -100, 100, 10, -1, 1);
+        setFractionAndCheckAction(fraction::multiply, -10, -100, 100, 10, 1, 1);
     }
 
     @Test
     void shouldDivideCorrectly() {
-        fraction.divide(new Fraction(2, 1));
+        setFractionAndCheckAction(fraction::divide, 100, 10, 10, 100, 100, 1);
 
-        checkForExpectedValues(1, 2);
+        setFractionAndCheckAction(fraction::divide, 100, 10, -10, 100, -100, 1);
+        setFractionAndCheckAction(fraction::divide, 100, 10, 10, -100, -100, 1);
+        setFractionAndCheckAction(fraction::divide, 100, 10, -10, -100, 100, 1);
+
+        setFractionAndCheckAction(fraction::divide, -10, 100, 100, 10, -1, 100);
+        setFractionAndCheckAction(fraction::divide, 10, -100, 100, 10, -1, 100);
+        setFractionAndCheckAction(fraction::divide, -10, -100, 100, 10, 1, 100);
+    }
+
+    private void setFractionAndCheckAction(
+        final Consumer<Fraction> action,
+        final int aNumerator,
+        final int aDenominator,
+        final int bNumerator,
+        final int bDenominator,
+        final int expectedNumerator,
+        final int expectedDenominator
+    ) {
+        fraction.setNumerator(aNumerator);
+        fraction.setDenominator(aDenominator);
+
+        Fraction fractionToAdd = new Fraction(bNumerator, bDenominator);
+
+        action.accept(fractionToAdd);
+
+        checkForExpectedValues(expectedNumerator, expectedDenominator);
     }
 
     @Test
@@ -84,6 +172,27 @@ class FractionTest {
         fraction.shrink();
 
         checkForExpectedValues(1, 10);
+    }
+
+    @Test
+    void shouldSanitizeCorrectly() {
+        setFractionAndCheckSanitation(10, 10, 10, 10);
+        setFractionAndCheckSanitation(-10, 10, -10, 10);
+        setFractionAndCheckSanitation(10, -10, -10, 10);
+        setFractionAndCheckSanitation(-10, -10, 10, 10);
+    }
+
+    private void setFractionAndCheckSanitation(
+        final int numerator,
+        final int denominator,
+        final int expectedNumerator,
+        final int expectedDenominator
+    ) {
+        fraction = new Fraction(numerator, denominator);
+
+        fraction.sanitize();
+
+        checkForExpectedValues(expectedNumerator, expectedDenominator);
     }
 
     private void checkForExpectedValues(final int expectedNumerator, final int expectedDenominator) {
